@@ -33,6 +33,11 @@ fn name(e) {
     return b[e]?["NAME"];
 }
 
+fn names(items) {
+    let c = b;
+    return map!(items, |x| {let b = c; name!(x);});
+}
+
 fn can_store_items(e) {
     return b[e]?["CAN_STORE_ITEMS"] ?? false;
 }
@@ -52,24 +57,46 @@ fn stored_items(e) {
     return map!(items, |x| {let b = context; name!(x);});
 }
 
-fn sterilize_text(e) {
+fn sterilize(e) {
     let text = e.to_lower();
     text.trim();
     return text;
 }
 
 fn location(e) {
+    return b[e]?["LOCATION"];
+}
+
+fn set_location(e, loc) {
+    b[e]?["LOCATION"] = loc;
+}
+
+
+fn exits(e) {
     return b[e]?["EXITS"];
 }
 
-fn exits(e) {
-    let items =  b[e]?["EXITS"];
-    if items == () {
-        return ();
+fn rooms() {
+    return b["ROOMS"];
+}
+
+fn inventory(e) {
+    return b[e]?["INVENTORY"];
+}
+
+fn pretty_display_visible_objects(e) {
+    // here we talk about exits
+    // Items in the room
+    // etc.
+    let visible = "";
+
+
+    let exits = exits!(location!(e));
+    if exits != () {
+        visible += "\n- Exists: " + exits;
     }
 
-    let context = b;
-    return map!(items, |x| {let b = context; name!(x);});
+    return visible;
 }
 
 //  --- Variable Code ---

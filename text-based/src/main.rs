@@ -1,6 +1,8 @@
 use rhai::{Engine, EvalAltResult, Scope};
 
-const HEADER: &str = include_str!("./constants.rhai");
+const HEADER: &str = include_str!("./header.rhai");
+const INITIALIZE_LEVEL_SCRIPT: &str = include_str!("./initialize_level.rhai");
+const PLAYER_SCRIPT: &str = include_str!("./player.rhai");
 
 struct Game<'a> {
     engine: Engine,
@@ -14,15 +16,14 @@ impl<'a> Game<'a> {
         let states = rhai::Map::new();
         scope.set_or_push("b", states);
 
+        // Initialize Level
         let engine = Engine::new();
-        let start_up_script = std::fs::read_to_string("./src/start_up.rhai").unwrap();
-        let script = std::format!("{}{}", HEADER, start_up_script);
+        let script = std::format!("{}{}", HEADER, INITIALIZE_LEVEL_SCRIPT);
         engine.run_with_scope(&mut scope, &script).unwrap();
         scope.rewind(1);
 
-        let player_script = std::fs::read_to_string("./src/player.rhai").unwrap();
-        let player_script = std::format!("{}{}", HEADER, player_script);
-
+        // Construct player script
+        let player_script = std::format!("{}{}", HEADER, PLAYER_SCRIPT);
         Self {
             engine,
             scope,
@@ -41,11 +42,13 @@ impl<'a> Game<'a> {
 
 pub fn main() -> Result<(), Box<EvalAltResult>> {
     let mut game = Game::new();
+    game.run(String::new());
 
-    loop {
-        println!("Start: ");
-        let mut line = String::new();
-        std::io::stdin().read_line(&mut line).unwrap();
-        game.run(line);
-    }
+    // loop {
+    //     println!("Start: ");
+    //     let mut line = String::new();
+    //     std::io::stdin().read_line(&mut line).unwrap();
+    // }
+
+    Ok(())
 }
