@@ -1,8 +1,9 @@
 use rhai::{Engine, EvalAltResult, Scope};
 
 const HEADER: &str = include_str!("./header.rhai");
-const INITIALIZE_LEVEL_SCRIPT: &str = include_str!("./initialize_level.rhai");
-const PLAYER_SCRIPT: &str = include_str!("./player.rhai");
+const INITIALIZE_ROOM_SCRIPT: &str = include_str!("./initialize_rooms.rhai");
+const INITIALIZE_ENTITIES_SCRIPT: &str = include_str!("./initialize_entities.rhai");
+const GAME_SCRIPT: &str = include_str!("./game.rhai");
 
 struct Game<'a> {
     engine: Engine,
@@ -14,16 +15,19 @@ impl<'a> Game<'a> {
     pub fn new() -> Self {
         let mut scope = Scope::new();
         let states = rhai::Map::new();
-        scope.set_or_push("b", states);
+        scope.set_or_push("w", states);
 
-        // Initialize Level
+        // Initialize Level and Entities
         let engine = Engine::new();
-        let script = std::format!("{}{}", HEADER, INITIALIZE_LEVEL_SCRIPT);
-        engine.run_with_scope(&mut scope, &script).unwrap();
-        scope.rewind(1);
+        for i in [INITIALIZE_ROOM_SCRIPT, INITIALIZE_ENTITIES_SCRIPT] {
+            engine
+                .run_with_scope(&mut scope, &std::format!("{}{}", HEADER, i))
+                .unwrap();
+            scope.rewind(1);
+        }
 
         // Construct player script
-        let player_script = std::format!("{}{}", HEADER, PLAYER_SCRIPT);
+        let player_script = std::format!("{}{}", HEADER, GAME_SCRIPT);
         Self {
             engine,
             scope,

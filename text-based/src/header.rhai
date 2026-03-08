@@ -1,60 +1,30 @@
-//  --- Rooms ---
-// "R"
-// "R_ENTRANCE";
-// "R_LIVING";
-// "R_KITCHEN";
-// "R_EXIT";
-
-//  --- Entities ---
-// "E"
-// "E_PLAYER";
-
-
-//  --- Possible attributes ---
-// "NAME";
-// "CONTAINS";
-// "EXITS";
-// "INVENTORY";
-// "DESCRIPTION";
-// "CAN_STORE_ITEMS";
-// "STORED_ITEMS";
-// "LOCATION";
-
-//  --- Items  ---
-// "I_COIN";
-// "I_BAG";
-
-//  --- Methods ---
-fn description(e) {
-    return b[e]?["DESCRIPTION"];
+fn description(x) {
+    return this[x]?["DESCRIPTION"];
 }
 
-fn name(e) {
-    return b[e]?["NAME"];
+fn name(x) {
+    return this[x]?["NAME"];
 }
 
 fn names(items) {
-    let c = b;
-    return map!(items, |x| {let b = c; name!(x);});
+    return map!(items, |x| { return this.name(x); });
 }
 
 fn can_store_items(e) {
-    return b[e]?["CAN_STORE_ITEMS"] ?? false;
+    return this[e]?["CAN_STORE_ITEMS"] ?? false;
 }
 
 fn stored_items(e) {
-    let items = b[e]?["STORED_ITEMS"];
+    let items = this[e]?["STORED_ITEMS"];
     if items == () {
-        return "Nothing is stored as you cannot store items here."
+        return "Nothing is stored as you cannot store items here.";
     }
 
     if items.is_empty() {
-        return "Nothing is stored."
+        return "Nothing is stored.";
     }
 
-
-    let context = b;
-    return map!(items, |x| {let b = context; name!(x);});
+    return this.name(items);
 }
 
 fn sterilize(e) {
@@ -63,25 +33,33 @@ fn sterilize(e) {
     return text;
 }
 
-fn location(e) {
-    return b[e]?["LOCATION"];
+fn location(r) {
+    return this[r]?["LOCATION"];
 }
 
-fn set_location(e, loc) {
-    b[e]?["LOCATION"] = loc;
+fn set_location(e, r) {
+    this[e]?["LOCATION"] = r;
 }
 
 
 fn exits(e) {
-    return b[e]?["EXITS"];
+    return this[e]?["EXITS"];
 }
 
 fn rooms() {
-    return b["ROOMS"];
+    return this["ROOMS"];
 }
 
 fn inventory(e) {
-    return b[e]?["INVENTORY"];
+    return this[e]?["INVENTORY"];
+}
+
+fn can_enter(e, r) {
+    let result =  this[r]?["CAN_ENTER"];
+    if result == () {
+        return true;
+    }
+    return result.call(this, e);
 }
 
 fn pretty_display_visible_objects(e) {
@@ -91,12 +69,38 @@ fn pretty_display_visible_objects(e) {
     let visible = "";
 
 
-    let exits = exits!(location!(e));
+    let exits = w.exits(w.location(e));
     if exits != () {
         visible += "\n- Exists: " + exits;
     }
 
     return visible;
+}
+
+fn move_to(to, player) {
+    let from = this[player]["LOCATION"];
+    return this.move_between_rooms(from, to, player);
+}
+
+
+fn move_between_rooms(from, to, player) {
+    let move = this[from]?[to]?["MOVE"];
+    if move == () {
+        return true;
+    }
+
+    return this.call(move, player)
+}
+
+fn unlock_room(room, player) {
+    let from = this[player]["LOCATION"];
+    let unlock = this[from]?[room]?["UNLOCK"];
+    if unlock == () {
+        print("There is nothing to unlock.");
+        return 
+    }
+
+    return this.call(unlock, player);
 }
 
 //  --- Variable Code ---

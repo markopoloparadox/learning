@@ -1,6 +1,15 @@
-parse_input!("kam můžu jít");
-parse_input!("jdi ložnice");
-parse_input!("kam můžu jít");
+
+print(w.move_to("R_GARAGE", "E_PLAYER"));
+w.unlock_room("R_GARAGE", "E_PLAYER");
+w["E_PLAYER"]["INVENTORY"] = ["I_KEY"];
+
+print(w.move_to("R_GARAGE", "E_PLAYER"));
+w.unlock_room("R_GARAGE", "E_PLAYER");
+print(w.move_to("R_GARAGE", "E_PLAYER"));
+
+// parse_input!("kam můžu jít");
+// parse_input!("jdi ložnice");
+// parse_input!("kam můžu jít");
 
 
 fn parse_input(input) {
@@ -14,7 +23,7 @@ fn parse_input(input) {
         // do Something
         return;
     }
-    let tokens =  input.split();
+    let tokens = input.split();
     let token = tokens.shift();
     switch token {
         "jdi" => jdi_command!(tokens),
@@ -25,7 +34,7 @@ fn parse_input(input) {
 
 fn name_room_where_i_can_go() {
     // Fetch my current location
-    let rooms = names!(exits!(location!("E_PLAYER")));
+    let rooms = w.names(w.exits(w.location("E_PLAYER")));
     print("Můžes jit: " + rooms);
 }
 
@@ -38,24 +47,25 @@ fn jdi_command(tokens) {
         return;
     }
 
-    let rooms_around_player = names!(exits!(location!("E_PLAYER")));
+    let rooms_around_player = w.names(w.exits(w.location("E_PLAYER")));
         if room_name !in all_room_names {
         print("There is no door to that room.");
         return;
     }
 
     let id = room_name_to_id!(room_name);
-    set_location!("E_PLAYER", id);
+    w.set_location("E_PLAYER", id);
 }
 
 fn room_name_to_id(name) {
-    let all_rooms = rooms!();
+    let all_rooms = w.rooms();
     for room in all_rooms {
         if sterilize(name!(room)) == name {
             return room;
         }
     }
 }
+
 
 
 // exits!(location!("E_PLAYER"));
