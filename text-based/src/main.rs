@@ -1,7 +1,7 @@
 use rhai::{Engine, EvalAltResult, Scope};
 
 const HEADER: &str = include_str!("./header.rhai");
-const INITIALIZE_ROOM_SCRIPT: &str = include_str!("./initialize_rooms.rhai");
+const INITIALIZE_ROOMS_SCRIPT: &str = include_str!("./rooms/mod.rhai");
 const INITIALIZE_ENTITIES_SCRIPT: &str = include_str!("./initialize_entities.rhai");
 const GAME_SCRIPT: &str = include_str!("./game.rhai");
 
@@ -19,12 +19,31 @@ impl<'a> Game<'a> {
 
         // Initialize Level and Entities
         let engine = Engine::new();
-        for i in [INITIALIZE_ROOM_SCRIPT, INITIALIZE_ENTITIES_SCRIPT] {
+
+        // Initialize Rooms
+        engine
+            .run_with_scope(
+                &mut scope,
+                &std::format!("{}{}", HEADER, INITIALIZE_ROOMS_SCRIPT),
+            )
+            .unwrap();
+        let rooms = scope.get_value::<rhai::Array>("room_scripts").unwrap();
+        for room in rooms {
+            let room = std::fs::read_to_string(room.into_string().unwrap()).unwrap();
             engine
-                .run_with_scope(&mut scope, &std::format!("{}{}", HEADER, i))
+                .run_with_scope(&mut scope, &std::format!("{}{}", HEADER, room))
                 .unwrap();
             scope.rewind(1);
         }
+        scope.rewind(1);
+
+        engine
+            .run_with_scope(
+                &mut scope,
+                &std::format!("{}{}", HEADER, INITIALIZE_ENTITIES_SCRIPT),
+            )
+            .unwrap();
+        scope.rewind(1);
 
         // Construct player script
         let player_script = std::format!("{}{}", HEADER, GAME_SCRIPT);
@@ -49,9 +68,9 @@ pub fn main() -> Result<(), Box<EvalAltResult>> {
     game.run(String::new());
 
     // loop {
-    //     println!("Start: ");
-    //     let mut line = String::new();
-    //     std::io::stdin().read_line(&mut line).unwrap();
+    //  println!("Start: ");
+    //  let mut line = String::new();
+    //  std::io::stdin().read_line(&mut line).unwrap();
     // }
 
     Ok(())

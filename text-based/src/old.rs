@@ -4,12 +4,12 @@
 //
 // engine.set_optimization_level(OptimizationLevel::None);
 // let ast = engine
-//     .compile_file_with_scope(&mut scope, "./src/player.rhai".into())
-//     .unwrap();
+//  .compile_file_with_scope(&mut scope, "./src/player.rhai".into())
+//  .unwrap();
 // ast.iter_literal_variables(true, false)
-//     .for_each(|(name, _, value)| {
-//         scope.push_constant(name, value);
-//     });
+//  .for_each(|(name, _, value)| {
+//      scope.push_constant(name, value);
+//  });
 
 // // Turn optimization back ON
 // engine.set_optimization_level(OptimizationLevel::Simple);
@@ -28,12 +28,12 @@
 // engine.call_fn::<()>(&mut scope, &ast, "run", ()).unwrap();
 
 // println!(
-//     "{}",
-//     scope
-//         .get_value::<rhai::Map>("bb")
-//         .unwrap()
-//         .get("output")
-//         .unwrap()
+//  "{}",
+//  scope
+//      .get_value::<rhai::Map>("bb")
+//      .unwrap()
+//      .get("output")
+//      .unwrap()
 // );
 
 // println!("{}", scope.len());
@@ -41,8 +41,8 @@
 
 // println!("{:?}", scope.get_value::<i64>("a"));
 // engine
-//     .run_file_with_scope(&mut scope, "./src/hello_world.rhai".into())
-//     .unwrap();
+//  .run_file_with_scope(&mut scope, "./src/hello_world.rhai".into())
+//  .unwrap();
 // println!("{}", scope.len());
 // println!("{:?}", scope.get_value::<i64>("a"));
 

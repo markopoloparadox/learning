@@ -1,8 +1,9 @@
 // --- Player ---
 w["E"] = ["E_PLAYER"];
-w["E_PLAYER"] = #{};
-w["E_PLAYER"]["LOCATION"] = "R_FOYER";
-w["E_PLAYER"]["INVENTORY"] = [];
+w["E_PLAYER"] = #{
+    location: "R_FOYER",
+    inventory: [],
+};
 
 // // --- Items ---
 // // Coin
