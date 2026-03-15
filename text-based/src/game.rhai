@@ -7,9 +7,9 @@
 // w.unlock_room("R_GARAGE", "E_PLAYER");
 // print(w.move_to("R_GARAGE", "E_PLAYER"));
 
-w["E_PLAYER"]["LOCATION"] = "R_FOYER";
-print(w.move_to("R_LIVING_ROOM", "E_PLAYER"));
-name_items_in_current_room!();
+// w["E_PLAYER"]["LOCATION"] = "R_FOYER";
+// print(w.move_to("R_LIVING_ROOM", "E_PLAYER"));
+// name_items_in_current_room!();
 
 // parse_input!("kam můžu jít");
 // parse_input!("jdi ložnice");

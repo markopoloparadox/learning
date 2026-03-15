@@ -1,8 +1,7 @@
 use rhai::{Engine, EvalAltResult, Scope};
 
 const HEADER: &str = include_str!("./header.rhai");
-const INITIALIZE_ROOMS_SCRIPT: &str = include_str!("./rooms/mod.rhai");
-const INITIALIZE_ENTITIES_SCRIPT: &str = include_str!("./initialize_entities.rhai");
+const INIT_SCRIPT: &str = include_str!("./everything/mod.rhai");
 const GAME_SCRIPT: &str = include_str!("./game.rhai");
 
 struct Game<'a> {
@@ -22,29 +21,19 @@ impl<'a> Game<'a> {
 
         // Initialize Rooms
         engine
-            .run_with_scope(
-                &mut scope,
-                &std::format!("{}{}", HEADER, INITIALIZE_ROOMS_SCRIPT),
-            )
+            .run_with_scope(&mut scope, &std::format!("{}{}", HEADER, INIT_SCRIPT))
             .unwrap();
-        let rooms = scope.get_value::<rhai::Array>("room_scripts").unwrap();
-        for room in rooms {
-            let room = std::fs::read_to_string(room.into_string().unwrap()).unwrap();
+        let scripts_to_load = scope.get_value::<rhai::Array>("scripts_to_load").unwrap();
+        for script in scripts_to_load {
+            let script = std::fs::read_to_string(script.into_string().unwrap()).unwrap();
             engine
-                .run_with_scope(&mut scope, &std::format!("{}{}", HEADER, room))
+                .run_with_scope(&mut scope, &std::format!("{}{}", HEADER, script))
                 .unwrap();
             scope.rewind(1);
         }
         scope.rewind(1);
 
-        engine
-            .run_with_scope(
-                &mut scope,
-                &std::format!("{}{}", HEADER, INITIALIZE_ENTITIES_SCRIPT),
-            )
-            .unwrap();
-        scope.rewind(1);
-
+        dbg!(&scope);
         // Construct player script
         let player_script = std::format!("{}{}", HEADER, GAME_SCRIPT);
         Self {
