@@ -33,7 +33,6 @@ impl<'a> Game<'a> {
         }
         scope.rewind(1);
 
-        dbg!(&scope);
         // Construct player script
         let player_script = std::format!("{}{}", HEADER, GAME_SCRIPT);
         Self {
